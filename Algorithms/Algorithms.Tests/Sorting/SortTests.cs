@@ -31,25 +31,31 @@ namespace Algorithms.Tests.Sorting
         {
             TestImpl(new MergeSort());
         }
+
+        [Fact]
+        public void Test_MergeSortBottomUp()
+        {
+            TestImpl(new MergeSortBottomUp());
+        }
         
         private void TestImpl(ISort sort)
         {
             var source = new ObservableCollection<ValueIndex>
             {
-                new ValueIndex(4, 0),
+                new ValueIndex(4, '¹'),
                 new ValueIndex(5),
                 new ValueIndex(2),
-                new ValueIndex(4, 3),
+                new ValueIndex(4, '²'),
                 new ValueIndex(6),
                 new ValueIndex(1),
                 new ValueIndex(3),
-                new ValueIndex(4, 7),
+                new ValueIndex(4, '³'),
                 new ValueIndex(0)
             };
-
-            PrintIfStable(source);
+     
+            TrackChanges(source, out var changes);
             
-            TrackChanges(source);
+            changes.Add(ToStringIfStable(source));
 
             sort.Sort(source);
 
@@ -59,39 +65,57 @@ namespace Algorithms.Tests.Sorting
                 new ValueIndex(1),
                 new ValueIndex(2),
                 new ValueIndex(3),
-                new ValueIndex(4, 0),
-                new ValueIndex(4, 3),
-                new ValueIndex(4, 7),
+                new ValueIndex(4, '¹'),
+                new ValueIndex(4, '²'),
+                new ValueIndex(4, '³'),
                 new ValueIndex(5),
                 new ValueIndex(6)
             };
             
+            string lastChange = null;
+            
+            foreach (var change in changes)
+            {
+                if (change == null || change == lastChange)
+                {
+                    continue;
+                }
+
+                lastChange = change;
+                
+                _out.WriteLine(change);
+            }
+            
             Assert.Equal(expected, source);
         }
 
-        private void TrackChanges<T>(T source) where T 
+        private static void TrackChanges<T>(T source, out IList<string> changes) where T 
             : class, INotifyCollectionChanged, ICollection<ValueIndex>
         {
+            changes = new List<string>();
+
+            var changesRef = changes;
+            
             source.CollectionChanged +=
-                (sender, args) => PrintIfStable((T) sender);
+                (sender, args) => changesRef.Add(ToStringIfStable((T) sender));
         }
 
-        private void PrintIfStable(ICollection<ValueIndex> state)
+        private static string ToStringIfStable(ICollection<ValueIndex> state)
         {
             if (state.GroupBy(i => i).Any(g => g.Count() > 1))
             {
-                return;
+                return null;
             }
             
-            _out.WriteLine(string.Join("\t", state));
+            return string.Join("\t", state);
         }
 
         private struct ValueIndex : IComparable<ValueIndex>
         {
             private readonly int _value;
-            private readonly int? _index;
+            private readonly char? _index;
 
-            public ValueIndex(int value, int? index = null)
+            public ValueIndex(int value, char? index = null)
             {
                 _value = value;
                 _index = index;
@@ -104,8 +128,8 @@ namespace Algorithms.Tests.Sorting
 
             public override string ToString()
             {
-                return _index.HasValue 
-                    ? $"{_value}:{_index}" 
+                return _index.HasValue
+                    ? $"{_value}{_index}" 
                     : $"{_value}";
             }
         }
