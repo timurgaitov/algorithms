@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Algorithms.Sorting
+﻿namespace Algorithms.Sort
 {
     public class MergeSortBottomUp : ISort
     {

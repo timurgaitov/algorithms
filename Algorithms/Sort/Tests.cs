@@ -1,20 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Globalization;
-using System.Linq;
-using Algorithms.Sorting;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Algorithms.Tests.Sorting
+namespace Algorithms.Sort
 {
-    public class SortTests
+    public class Tests
     {
         private readonly ITestOutputHelper _out;
 
-        public SortTests(
+        public Tests(
             ITestOutputHelper @out)
         {
             _out = @out;
