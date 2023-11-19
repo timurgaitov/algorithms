@@ -16,6 +16,12 @@ namespace Algorithms.Sort
         }
 
         [Fact]
+        public void Test_QuickSort()
+        {
+            TestImpl(new QuickSort());
+        }
+        
+        [Fact]
         public void Test_InsertionSort()
         {
             TestImpl(new InsertionSort());
